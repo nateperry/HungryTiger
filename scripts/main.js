@@ -31,23 +31,23 @@ app.main = (function(){
 	// CONSTANTS
 	var MIS_JSONP_URL = "http://maps.rit.edu/proxySearch/?wt=json&indent=on&json.wrf=app.main.onJSONLoaded&q=";
 	var ALL_DINING_URL = "http://maps.rit.edu/proxySearch/?show=all&q=*&wt=json&indent=off&fq=tag:%22Food%22&sort=name+asc&start=0&rows=17&json.wrf=app.main.onJSONLoaded";
-   
-   	// INSTANCE VARIABLES
 
-   	var debugMode;
-   	//Google Maps-Related
-    var map;
-    var infowindow;
-    var marker;
-    var overlays;
-    //LatLong array for Google Maps
-    //Array of markers
-    var markerArray = [];
-    var locationArray = [];
-    //Arrays
-    var placesArray = [];
-    //Parallel Array with open status as boolean
-    var openArray = [];
+ 	// INSTANCE VARIABLES
+
+ 	var debugMode;
+ 	//Google Maps-Related
+  var map;
+  var infowindow;
+  var marker;
+  var overlays;
+  //LatLong array for Google Maps
+  //Array of markers
+  var markerArray = [];
+  var locationArray = [];
+  //Arrays
+  var placesArray = [];
+  //Parallel Array with open status as boolean
+  var openArray = [];
 
 	//Setup date stuff
 	var days = [];
@@ -70,7 +70,7 @@ app.main = (function(){
 
 	if(theHour < 10)
 		theHour = "0" + theHour;
-		
+
 	var theMinute = theDate.getMinutes();
 
 	if(theMinute < 10)
@@ -85,57 +85,57 @@ app.main = (function(){
 	if(theDate.getHours() < 5)
 	{
 		current = parseInt(current);
-		current += 24;	
+		current += 24;
 	}
 	current += theMinute.toString();
 	//current = parseInt(current,10);
-    
+
     // PUBLIC METHODS
     function init(){
-		// initializeMap() sets up the Google Map
-		initializeMap();
+			// initializeMap() sets up the Google Map
+			initializeMap();
 
-		// Add events to UI
-		$("#ajax-loader").hide();
+			// Add events to UI
+			$("#ajax-loader").hide();
 
-		$("#currentTime").html("<div class='clock'><span class='hourSpan'>" + theHour + "</span>" + "<span class='minuteSpan'>" + theMinute + "</span> <span class='ampmSpan'>" + ampm + "</span></div>");
-		if(debugMode === true)
-			$("#logo").html("current = " + current);
-		
-		//Should return all open places
-		onGetFood("all");
-		
-		//Load all open places into 
-		var daysVisual = "";
-		daysVisual += "<ul>";
-		for (var i = 0; i < days.length; i++)
-		{
-			daysVisual += "<li";
-			if(theDate.getDay() === i)
-			{
-				daysVisual += " class='today' ";
-			}
-			daysVisual += ">" + days[i] + "</li>";
-		}
-		daysVisual += "<ul>";
+			$("#currentTime").html("<div class='clock'><span class='hourSpan'>" + theHour + "</span>" + "<span class='minuteSpan'>" + theMinute + "</span> <span class='ampmSpan'>" + ampm + "</span></div>");
+			if(debugMode === true)
+				$("#logo").html("current = " + current);
 
-		$("#days").html(daysVisual);
-	
-
-		//Save show logos status
-		$("#showLogos").on('click', function(event) {
-			window.localStorage.setItem('showImages', $(this).prop('checked'));
+			//Should return all open places
 			onGetFood("all");
-		});
 
-		//Save debugging status
-		$("#debugOn").on('click', function(event) {
-			window.localStorage.setItem('debugOn', $(this).prop('checked'));
-		});
+			//Load all open places into
+			var daysVisual = "";
+			daysVisual += "<ul>";
+			for (var i = 0; i < days.length; i++)
+			{
+				daysVisual += "<li";
+				if(theDate.getDay() === i)
+				{
+					daysVisual += " class='today' ";
+				}
+				daysVisual += ">" + days[i] + "</li>";
+			}
+			daysVisual += "<ul>";
+
+			$("#days").html(daysVisual);
+
+
+			//Save show logos status
+			$("#showLogos").on('click', function(event) {
+				window.localStorage.setItem('showImages', $(this).prop('checked'));
+				onGetFood("all");
+			});
+
+			//Save debugging status
+			$("#debugOn").on('click', function(event) {
+				window.localStorage.setItem('debugOn', $(this).prop('checked'));
+			});
 
     }; // end init
-    
-    function onJSONLoaded(obj){
+
+	function onJSONLoaded(obj){
 		//alert(JSON.stringify(obj));
 		var html = "";
 		//Clear arrays
@@ -165,12 +165,10 @@ app.main = (function(){
 							//In the table, the days are the left (even) cells and the corresponding times are the next cell
 							if(index % 2 === 0)
 							{
-								//console.log("Hitting even-numbered cells");
-								//console.log($(this).text());
 								if($(this).text().indexOf(theDay) >= 0)
-								{	
+								{
 									//Special cases for "noon" and "midnight" times, as well as Gracie's and RITz
-					      			html += parseLocation($(this).next().text().toString(),name,des,full_des,results[i].latitude,results[i].longitude,i);
+					      	html += parseLocation($(this).next().text().toString(),name,des,full_des,results[i].latitude,results[i].longitude,i);
 								}
 
 								else if((($(this).text().indexOf("Monday - Thursday") >= 0) || ($(this).text().indexOf("Monday - Friday") >= 0) || ($(this).text().indexOf("Monday - Saturday") >= 0)) && (theDay == "Tuesday" || theDay == "Wednesday"))
@@ -191,7 +189,7 @@ app.main = (function(){
 			//Send it to Google Maps
 			}
 		} //end results > 0 if
-		
+
 		// set html of #content div using jquery()
 		$("#content").html(html);
 		$("#content").hide();
@@ -202,22 +200,20 @@ app.main = (function(){
 		$('img.closed').after('<span class="closed">Closed</span>');
 		$("#places").hide();
 		$("#places").fadeIn();
-		
-
-		 
 	};
-	
-	
-	
+
+
+
 	// PRIVATE CALLBACK METHODS
-	
+
 	// called when we want to query
 	function onGetFood(term){
 		var url = MIS_JSONP_URL + term;
 		if(term === "all")
 			url = ALL_DINING_URL;
-		
+
 		$.ajax({
+        crossDomain: true,
 				url: url,
 				dataType: 'jsonp'
 				// we are specifying our callback of 'app.main.onJSONLoaded' function in the URL
@@ -233,17 +229,11 @@ app.main = (function(){
 		//For some reason, Ben and Jerry's closing time isn't parsed correctly, so we'll add it manually
 		if(name.indexOf("Jerry") >= 0)
 			closing = "9 p.m.";
-		if(debugMode = true)
-		{
-	  		console.log(name + "Military opening: " + convertToMilitary(opening));
-	  		console.log(name + "Current time: " + current);
-			console.log(name + "Military closing: " + convertToMilitary(closing));
-		}
 		//Data to send to the map after we create the HTML
 		var position = new google.maps.LatLng(latitude, longitude);
 		var mapData = "<p>" + name + "</p>\n";
 			mapData += "<h3>";
-		
+
 		//We're making a list of each place
 		var html = "";
 		html += "<div id =\"" + trimText(name,false) + "\">";
@@ -259,13 +249,13 @@ app.main = (function(){
 		if(theTime.indexOf("closed") === -1) //They're open today
 		{
 			placesArray.push(name);
-			
+
 			if(convertToMilitary(opening) <= current && current <= convertToMilitary(closing)) //They're open right now
 			{
 				openArray.push(1);
 				mapData += "Open";
 			}
-				
+
 			else
 			{
 				openArray.push(0);
@@ -289,9 +279,9 @@ app.main = (function(){
 		if(time.indexOf(":") >= 0)
 		{
 			milHour = time.substr(0,(time.indexOf(":")));
-			milMin = time.substr((time.indexOf(":") + 1),time.indexOf(" ") - 2);	
+			milMin = time.substr((time.indexOf(":") + 1),time.indexOf(" ") - 2);
 		}
-			
+
 		else
 		{
 			milHour = time.substr(0,time.indexOf(" "));
@@ -351,7 +341,7 @@ app.main = (function(){
 			scrollTop: $(theDiv).offset().top
 			 - 50}, 300,"linear");
 	}
-	
+
 	//Return a list, either as text or as images
 	function makeArrayList(array,showImages)
 	{
@@ -382,7 +372,7 @@ app.main = (function(){
 
 		}
 		list += "</ul>";
-		
+
 		return list;
 	}
 
@@ -404,7 +394,7 @@ app.main = (function(){
 			infowindow.open(map);
 		});
 	}
-	
+
 	// Sets up Google Map
 	function initializeMap() {
         var myOptions = {
@@ -412,12 +402,12 @@ app.main = (function(){
           zoom: 16,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
-        // create google map  
+        // create google map
         map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-        infowindow = new google.maps.InfoWindow(); 
-        
-	};	
-	
+        infowindow = new google.maps.InfoWindow();
+
+	};
+
 	// public interfaces
 	//If something outside the main function
 	//needs to call a function
@@ -428,5 +418,5 @@ app.main = (function(){
 		animateScroll: animateScroll,
 		onJSONLoaded: onJSONLoaded
 	};
-	
+
 })(); // end app.main
